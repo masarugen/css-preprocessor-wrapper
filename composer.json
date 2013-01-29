@@ -1,0 +1,26 @@
+{
+    "name": "genlib/css-preprocessor-wrapper",
+    "description": "Css Preprocessor Wrapper",
+    "keywords": ["css", "preprocessor", "wrapper"],
+    "homepage": "https://github.com/nasneg/css-preprocessor-wrapper",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Masaru Hashizume",
+            "email": "hashizume.masaru@gmail.com",
+            "homepage": "http://about.me/nasneg",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+      "php": ">=5.3.3"
+    },
+    "require-dev": {
+      "phpunit/phpunit": "3.7.*"
+    },
+    "autoload": {
+      "psr-0": {
+        "Genlib": "src/"
+      }
+    }
+}

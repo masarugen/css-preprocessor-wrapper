@@ -20,117 +20,32 @@ class Less extends Base
             $command = 'lessc';
         }
         parent::__construct(__CLASS__, $command);
+        $this->functions['options'][] = 'help';
+        $this->functions['options'][] = 'noColor';
+        $this->functions['options'][] = 'silent';
+        $this->functions['options'][] = 'strictImports';
+        $this->functions['options'][] = 'verbose';
+        $this->functions['options'][] = 'version';
+        $this->functions['options'][] = 'compress';
+        $this->functions['options'][] = 'yuiCompress';
+        $this->functions['options'][] = 'lineNumbers';
+        $this->functions['subs'][] = 'includePath';
+        $this->functions['subs'][] = 'subOptimization';
+        $this->functions['subs'][] = 'lineNumbers';
+        $this->functions['subs'][] = 'input';
+        $this->functions['subs'][] = 'output';
+        $this->functions['params'][] = 'lineNumbers';
     }
 
-    /**
-     * -h, --help
-     * help (this message) and exit.
-     */
-    public function help()
+    protected function subIncludePath($args)
     {
-        $this->addOption(__FUNCTION__);
-
-        return $this;
+        $this->paths = array_merge($this->paths, $args);
     }
 
-    /**
-     * --include-path
-     * Set include paths. Separated by `:'. Use `;' on Windows.
-     */
-    public function includePath($path)
-    {
-        $this->addPath($path);
-
-        return $this;
-    }
-
-    /**
-     * --no-color
-     * Disable colorized output.
-     */
-    public function noColor()
-    {
-        $this->addOption(__FUNCTION__);
-
-        return $this;
-    }
-
-    /**
-     * -s, --silent
-     * Suppress output of error messages.
-     */
-    public function silent()
-    {
-        $this->addOption(__FUNCTION__);
-
-        return $this;
-    }
-
-    /**
-     * --strict-imports
-     * Force evaluation of imports.
-     */
-    public function strictImports()
-    {
-        $this->addOption(__FUNCTION__);
-
-        return $this;
-    }
-
-    /**
-     * --verbose
-     * Be verbose.
-     */
-    public function verbose()
-    {
-        $this->addOption(__FUNCTION__);
-
-        return $this;
-    }
-
-    /**
-     * -v, --version
-     * Print version number and exit.
-     */
-    public function version()
-    {
-        $this->addOption(__FUNCTION__);
-
-        return $this;
-    }
-
-    /**
-     * -x, --compress
-     * Compress output by removing some whitespaces.
-     */
-    public function compress()
-    {
-        $this->addOption(__FUNCTION__);
-
-        return $this;
-    }
-
-    /**
-     * --yui-compress
-     * Compress output using cssmin.js.
-     */
-    public function yuiCompress()
-    {
-        $this->addOption(__FUNCTION__);
-
-        return $this;
-    }
-
-    /**
-     * -O0, -O1, -O2
-     * Set the parser's optimization level. The lower
-     * the number, the less nodes it will create in the
-     * tree. This could matter for debugging, or if you
-     * want to access the individual nodes in the tree.
-     */
-    public function optimization($level)
+    protected function subOptimization($args)
     {
         $optimization = null;
+        $level = $args[0];
         switch ($level) {
         case 0:
             $optimization = 0;
@@ -145,22 +60,11 @@ class Less extends Base
         if ($optimization !== null) {
             $this->optimization = $optimization;
         }
-
-        return $this;
     }
 
-    /**
-     * --line-numbers=TYPE
-     * Outputs filename and line numbers.
-     * TYPE can be either 'comments', which will output
-     * the debug info within comments, 'mediaquery'
-     * that will output the information within a fake
-     * media query which is compatible with the SASS
-     * format, and 'all' which will do both.
-     */
-    public function lineNumbers($type = self::LINE_NUMBERS_COMMENTS)
+    protected function subLineNumbers($args)
     {
-        $this->addOption(__FUNCTION__);
+        $type = isset($args[0]) ? $args[0] : self::LINE_NUMBERS_COMMENTS;
         switch ($type) {
             case self::LINE_NUMBERS_MEDIAQUERY:
                 $param = 'mediaquery';
@@ -173,23 +77,18 @@ class Less extends Base
                 $param = 'comments';
                 break;
         }
-        $this->addParam(__FUNCTION__, $param);
 
-        return $this;
+        return $param;
     }
 
-    public function input($path)
+    protected function subInput($args)
     {
-        $this->input = $path;
-
-        return $this;
+        $this->input = $args[0];
     }
 
-    public function output($path)
+    protected function subOutput($args)
     {
-        $this->output = $path;
-
-        return $this;
+        $this->output = $args[0];
     }
 
     public function run($output = true, $dryrun = false, $clear = true)

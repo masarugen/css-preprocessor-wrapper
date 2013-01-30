@@ -4,6 +4,11 @@ namespace Genlib\CssPreprocessorWrapper;
 
 abstract class Base
 {
+    protected $functions = array(
+        'options' => array(),
+        'subs' => array(),
+        'params' => array()
+    );
     protected $options = array();
     protected $params = array();
     protected $command = array();
@@ -40,9 +45,33 @@ abstract class Base
         return ltrim($option, '-');
     }
 
+    public function __call($name, $args)
+    {
+        $error = true;
+        if (in_array($name, $this->functions['options'])) {
+            $error = false;
+            $this->addOption($name);
+        }
+        $param = isset($args[0]) ? $args[0] : null;
+        if (in_array($name, $this->functions['subs'])) {
+            $error = false;
+            $function = 'sub'.strtoupper(substr($name, 0, 1)).substr($name, 1);
+            $param = $this->$function($args);
+        }
+        if (in_array($name, $this->functions['params'])) {
+            $error = false;
+            $this->addParam($name, $param);
+        }
+        if ($error) {
+            throw new \Genlib\Exception\NoSuchMethodException("Call to undefined method. : {$name}");
+        }
+
+        return $this;
+    }
+
     public function dryrun($clear = false)
     {
-        return $this->run(false, false, $clear);
+        return $this->run(false, true, $clear);
     }
 
     protected function run($output = true, $dryrun = false, $clear = true, $addCommand = null, $paramSeparator = ' ')
